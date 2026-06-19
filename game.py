@@ -16,8 +16,23 @@ def draw_grid():
     print()
 
 
+def move_player(key: str) -> None:
+    """Move the player one step in the given direction, if within bounds."""
+    global player_x, player_y
+    key = key.lower()
+    if key == "w" and player_y > 0:
+        player_y -= 1
+    elif key == "a" and player_x > 0:
+        player_x -= 1
+    elif key == "s" and player_y < GRID_SIZE - 1:
+        player_y += 1
+    elif key == "d" and player_x < GRID_SIZE - 1:
+        player_x += 1
+
+
 if __name__ == "__main__":
     while True:
         draw_grid()
-        command = input("Enter a command: ").strip().lower()
-        print(f"You entered: {command}")
+        move = input("Move (W/A/S/D): ").strip().lower()
+        move_player(move)
+        print("\033c", end="")
