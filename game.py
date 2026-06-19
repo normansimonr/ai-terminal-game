@@ -6,6 +6,8 @@ player_y = 0
 score = 0
 target_x = 0
 target_y = 0
+hazard_x = 0
+hazard_y = 0
 
 
 def spawn_target() -> None:
@@ -19,8 +21,19 @@ def spawn_target() -> None:
             break
 
 
+def spawn_hazard() -> None:
+    """Place hazard at a random position not occupied by the player or target."""
+    global hazard_x, hazard_y
+    while True:
+        hx = random.randint(0, GRID_SIZE - 1)
+        hy = random.randint(0, GRID_SIZE - 1)
+        if (hx, hy) not in ((player_x, player_y), (target_x, target_y)):
+            hazard_x, hazard_y = hx, hy
+            break
+
+
 def draw_grid() -> None:
-    """Draw the 5x5 grid with the player, target, and current score."""
+    """Draw the 5x5 grid with the player, target, hazard, and current score."""
     print(f"Score: {score}")
     for row in range(GRID_SIZE):
         line = ""
@@ -29,6 +42,8 @@ def draw_grid() -> None:
                 line += " P "
             elif col == target_x and row == target_y:
                 line += " T "
+            elif col == hazard_x and row == hazard_y:
+                line += " X "
             else:
                 line += " . "
         print(line)
@@ -59,12 +74,21 @@ def check_collection() -> bool:
     return False
 
 
+def check_hazard() -> bool:
+    """Return True if the player is on the hazard tile."""
+    return (player_x, player_y) == (hazard_x, hazard_y)
+
+
 if __name__ == "__main__":
     spawn_target()
+    spawn_hazard()
     while True:
         draw_grid()
         move = input("Move (W/A/S/D): ").strip().lower()
         move_player(move)
+        if check_hazard():
+            print("Game Over!")
+            break
         if check_collection() and score >= 10:
             print("Victory! You collected all 10 treasures!")
             break

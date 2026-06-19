@@ -6,12 +6,14 @@ import game
 
 @pytest.fixture(autouse=True)
 def reset_state():
-    """Reset the player, score, and target before every test."""
+    """Reset the player, score, target, and hazard before every test."""
     game.player_x = 0
     game.player_y = 0
     game.score = 0
     game.target_x = 0
     game.target_y = 0
+    game.hazard_x = 0
+    game.hazard_y = 0
     yield
 
 
@@ -173,3 +175,60 @@ def test_collect_all_ten_wins():
         game.player_y = game.target_y
     game.check_collection()
     assert game.score == 10
+
+
+# --- Hazard tests ---
+
+def test_hazard_starts_at_origin():
+    """Hazard should initially be at (0, 0)."""
+    assert game.hazard_x == 0
+    assert game.hazard_y == 0
+
+
+def test_spawn_hazard_places_within_bounds():
+    """spawn_hazard should place the hazard inside the grid."""
+    game.player_x = 2
+    game.player_y = 2
+    game.target_x = 3
+    game.target_y = 3
+    game.spawn_hazard()
+    assert 0 <= game.hazard_x < game.GRID_SIZE
+    assert 0 <= game.hazard_y < game.GRID_SIZE
+
+
+def test_spawn_hazard_not_on_player_or_target():
+    """spawn_hazard should avoid the player and the target."""
+    game.player_x = 2
+    game.player_y = 2
+    game.target_x = 3
+    game.target_y = 3
+    occupied = {(2, 2), (3, 3)}
+    for _ in range(50):
+        game.spawn_hazard()
+        assert (game.hazard_x, game.hazard_y) not in occupied
+
+
+def test_check_hazard_returns_true_when_on_hazard():
+    """check_hazard should return True if player is on the hazard."""
+    game.hazard_x = 2
+    game.hazard_y = 0
+    game.player_x = 2
+    game.player_y = 0
+    assert game.check_hazard() is True
+
+
+def test_check_hazard_returns_false_when_not_on_hazard():
+    """check_hazard should return False if player is not on the hazard."""
+    game.hazard_x = 4
+    game.hazard_y = 4
+    game.player_x = 1
+    game.player_y = 1
+    assert game.check_hazard() is False
+
+
+def test_moving_onto_hazard_triggers_game_over():
+    """Walking onto the hazard should be detected by check_hazard."""
+    game.hazard_x = 1
+    game.hazard_y = 0
+    game.move_player("d")
+    assert game.check_hazard() is True
