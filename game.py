@@ -1,5 +1,15 @@
 import random
 
+GAME_NAME = "Norman's Jungle \U0001F412"
+STORY_INTRO = (
+    "Explore the jungle, grab bananas, and dodge snakes!"
+)
+PLAYER = "\U0001F412"       # 🐒 monkey
+COLLECTIBLE = "\U0001F34C"  # 🍌 banana
+HAZARD = "\U0001F40D"       # 🐍 snake
+WIN_MSG = "\U0001F389 You collected all the bananas! Norman conquers the jungle!"
+LOSE_MSG = "\U0001F40D A snake got you! Game over!"
+
 GRID_SIZE = 5
 player_x = 0
 player_y = 0
@@ -39,13 +49,13 @@ def draw_grid() -> None:
         line = ""
         for col in range(GRID_SIZE):
             if col == player_x and row == player_y:
-                line += " P "
+                line += f" {PLAYER} "
             elif col == target_x and row == target_y:
-                line += " T "
+                line += f" {COLLECTIBLE} "
             elif col == hazard_x and row == hazard_y:
-                line += " X "
+                line += f" {HAZARD} "
             else:
-                line += " . "
+                line += " \u00B7 "
         print(line)
     print()
 
@@ -92,18 +102,20 @@ def reset_game() -> None:
 if __name__ == "__main__":
     while True:
         reset_game()
+        print(f"\033c{GAME_NAME}")
+        print(STORY_INTRO)
+        print()
         while True:
             draw_grid()
             move = input("Move (W/A/S/D): ").strip().lower()
             move_player(move)
             if check_hazard():
-                print("Game Over!")
+                print(LOSE_MSG)
                 break
             if check_collection() and score >= 10:
-                print("Victory! You collected all 10 treasures!")
+                print(WIN_MSG)
                 break
             print("\033c", end="")
         again = input("Play again? (y/n): ").strip().lower()
         if again != "y":
             break
-        print("\033c", end="")

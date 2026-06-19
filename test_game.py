@@ -267,3 +267,58 @@ def test_reset_game_respawns_hazard():
     game.reset_game()
     occupied = {(game.player_x, game.player_y), (game.target_x, game.target_y)}
     assert (game.hazard_x, game.hazard_y) not in occupied
+
+
+# --- Theme tests ---
+
+def test_game_name():
+    """Game name should mention Norman's Jungle."""
+    assert "Norman" in game.GAME_NAME
+    assert "Jungle" in game.GAME_NAME
+
+
+def test_story_intro():
+    """Story intro should mention the jungle."""
+    assert "jungle" in game.STORY_INTRO
+
+
+def test_player_emoji():
+    """Player emoji should be a monkey."""
+    assert game.PLAYER == "\U0001F412"
+
+
+def test_collectible_emoji():
+    """Collectible emoji should be a banana."""
+    assert game.COLLECTIBLE == "\U0001F34C"
+
+
+def test_hazard_emoji():
+    """Hazard emoji should be a snake."""
+    assert game.HAZARD == "\U0001F40D"
+
+
+def test_win_message():
+    """Win message should mention bananas and conquering."""
+    assert "bananas" in game.WIN_MSG
+    assert "conquers" in game.WIN_MSG
+
+
+def test_lose_message():
+    """Lose message should mention snake and game over."""
+    assert "snake" in game.LOSE_MSG
+    assert "Game over" in game.LOSE_MSG
+
+
+def test_draw_grid_does_not_crash():
+    """draw_grid should run without errors."""
+    import io
+    import sys
+    captured = io.StringIO()
+    old_out = sys.stdout
+    sys.stdout = captured
+    try:
+        game.draw_grid()
+    finally:
+        sys.stdout = old_out
+    output = captured.getvalue()
+    assert "Score:" in output
