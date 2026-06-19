@@ -79,17 +79,31 @@ def check_hazard() -> bool:
     return (player_x, player_y) == (hazard_x, hazard_y)
 
 
-if __name__ == "__main__":
+def reset_game() -> None:
+    """Reset the player, score, and respawn target and hazard."""
+    global player_x, player_y, score
+    player_x = 0
+    player_y = 0
+    score = 0
     spawn_target()
     spawn_hazard()
+
+
+if __name__ == "__main__":
     while True:
-        draw_grid()
-        move = input("Move (W/A/S/D): ").strip().lower()
-        move_player(move)
-        if check_hazard():
-            print("Game Over!")
-            break
-        if check_collection() and score >= 10:
-            print("Victory! You collected all 10 treasures!")
+        reset_game()
+        while True:
+            draw_grid()
+            move = input("Move (W/A/S/D): ").strip().lower()
+            move_player(move)
+            if check_hazard():
+                print("Game Over!")
+                break
+            if check_collection() and score >= 10:
+                print("Victory! You collected all 10 treasures!")
+                break
+            print("\033c", end="")
+        again = input("Play again? (y/n): ").strip().lower()
+        if again != "y":
             break
         print("\033c", end="")

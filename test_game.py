@@ -232,3 +232,38 @@ def test_moving_onto_hazard_triggers_game_over():
     game.hazard_y = 0
     game.move_player("d")
     assert game.check_hazard() is True
+
+
+# --- Reset / play-again tests ---
+
+def test_reset_game_resets_player_position():
+    """reset_game should put the player back at (0, 0)."""
+    game.move_player("d")
+    game.move_player("s")
+    game.reset_game()
+    assert game.player_x == 0
+    assert game.player_y == 0
+
+
+def test_reset_game_resets_score():
+    """reset_game should set score back to 0."""
+    game.score = 5
+    game.reset_game()
+    assert game.score == 0
+
+
+def test_reset_game_respawns_target():
+    """reset_game should place a new target (not on the player)."""
+    game.target_x = 2
+    game.target_y = 2
+    game.reset_game()
+    assert (game.target_x, game.target_y) != (game.player_x, game.player_y)
+
+
+def test_reset_game_respawns_hazard():
+    """reset_game should place a new hazard (not on player or target)."""
+    game.hazard_x = 3
+    game.hazard_y = 3
+    game.reset_game()
+    occupied = {(game.player_x, game.player_y), (game.target_x, game.target_y)}
+    assert (game.hazard_x, game.hazard_y) not in occupied
